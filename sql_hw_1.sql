@@ -1,19 +1,9 @@
---Sql дз Университет
-
---(Залить в репозиторий и отправить все скрипты из всех частей)
-
---Создаем схему Инженерно-экономического университета
-
---Часть 1. Создание структуры. Определить самостоятельно типы данных для каждого поля(колонки). 
---Самостоятельно определить что является primary key и foreign key.
-
 --1. Создать таблицу с факультетами: id, имя факультета, стоимость обучения
 create table faculty (
 						id int primary key,
 						name varchar(50),
 						coast numeric(10, 2)
 						);
-SELECT * FROM faculty;
 
 --2. Создать таблицу с курсами: id, номер курса, id факультета
 create table course (
@@ -21,8 +11,6 @@ create table course (
 						number int,
 						faculty_id int references faculty(id)
 						);
-drop table course;
-SELECT * FROM course;
 
 --3. Создать таблицу с учениками: id, имя, фамилия, отчество, бюджетник/частник, id курса
 create table student (
@@ -33,16 +21,13 @@ create table student (
 						is_budget boolean,
 						course_id int references course(id)
 						);
-SELECT * FROM student;
 
 -- Часть 2. Заполнение данными:
 -- 1. Создать два факультета: Инженерный (30 000 за курс) , Экономический (49 000 за курс)
-SELECT * FROM faculty;
 insert into faculty values(1, 'Инженерный', 30000);
 insert into faculty values(2, 'Экономический', 49000);
 
 -- 2. Создать 1 курс на Инженерном факультете: 1 курс
-SELECT * FROM course;
 insert into course values(
 						1, 
 						1, 
@@ -53,7 +38,6 @@ insert into course values(
 						);
 
 -- 3. Создать 2 курса на экономическом факультете: 1, 4 курс
-SELECT * FROM course;
 insert into course values(
 						2, 
 						1, 
@@ -73,9 +57,6 @@ insert into course values(
 
 -- 4. Создать 5 учеников:
 -- Петров Петр Петрович, 1 курс инженерного факультета, бюджетник
-SELECT * FROM student;
-SELECT * FROM course;
-delete from student;
 insert into student values(
 							1, 
 							'Петр',
@@ -148,5 +129,37 @@ insert into student values(
 														from faculty
 														where name like('Экономический')
 													)
-							)
-						);
+                           )
+                        );
+
+-- Часть 3. Выборка данных. Необходимо написать запросы, которые выведут на экран:
+-- 1. Вывести всех студентов, кто платит больше 30_000.
+select student.*, course.faculty_id, faculty.name, faculty.coast
+from student
+left join course on student.course_id = course.id
+left join faculty on course.faculty_id = faculty.id
+where student.is_budget = false and faculty.coast > 30000;
+
+-- 2. Перевести всех студентов Петровых на 1 курс экономического факультета.
+update student
+set course_id = (select course.id
+				from course
+				left join faculty on course.faculty_id = faculty.id
+				where course.number = 1 and faculty.name = 'Экономический')
+where student.last_name = 'Петров';
+
+-- 3. Вывести всех студентов без отчества или фамилии.
+select *
+from student
+where middle_name is null or last_name is null;
+
+-- 4. Вывести всех студентов содержащих в фамилии или в имени или в отчестве "ван".
+--(пример name like '%Петр%' - найдет всех Петров, Петровичей, Петровых)
+select *
+from student
+where last_name like '%ван%' or first_name like '%ван%' or middle_name like '%ван%';
+
+-- 5. Удалить все записи из всех таблиц.
+delete from student;
+delete from course;
+delete from faculty;
