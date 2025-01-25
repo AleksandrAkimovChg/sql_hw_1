@@ -1,6 +1,6 @@
 --1. Создать таблицу с факультетами: id, имя факультета, стоимость обучения
 create table faculty (
-						id int primary key,
+                        id int primary key,
 						name varchar(50),
 						coast numeric(10, 2)
 						);
