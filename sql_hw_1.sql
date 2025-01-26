@@ -146,7 +146,7 @@ set course_id = (select course.id
 				from course
 				left join faculty on course.faculty_id = faculty.id
 				where course.number = 1 and faculty.name = 'Экономический')
-where student.last_name = 'Петров';
+where student.last_name = 'Петров' or student.last_name = 'Петрова';
 
 -- 3. Вывести всех студентов без отчества или фамилии.
 select *
