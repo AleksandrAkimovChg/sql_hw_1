@@ -37,7 +37,7 @@ WITH orders_sum AS (
 	JOIN order_details USING(order_id)
     GROUP BY employee_id
 ), employee_fio AS (
-	SELECT employee_id, concat(lASt_name, ' ', first_name) AS fio
+	SELECT employee_id, concat(last_name, ' ', first_name) AS fio
 	FROM employees
 )
 SELECT t2.fio "ФИО", CAST(SUM(t1.sum_orders - t1.abs_discount) AS numeric(10, 2)) "Сумма всех заказов"
