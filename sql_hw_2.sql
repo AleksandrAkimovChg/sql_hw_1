@@ -31,19 +31,15 @@ ORDER BY city;
 
 WITH orders_sum AS (
 	SELECT employee_id,
-	    CAST(SUM(unit_price * quantity) AS numeric(10, 2)) AS sum_orders,
-		SUM(unit_price * quantity * discount) AS abs_discount
+	    CAST(SUM((unit_price * quantity) * (1 - discount)) AS numeric(10, 2)) AS sum_orders_discount
 	FROM orders
 	JOIN order_details USING(order_id)
     GROUP BY employee_id
-), employee_fio AS (
-	SELECT employee_id, concat(last_name, ' ', first_name) AS fio
-	FROM employees
 )
-SELECT t2.fio "ФИО", CAST(SUM(t1.sum_orders - t1.abs_discount) AS numeric(10, 2)) "Сумма всех заказов"
+SELECT concat(t2.last_name, ' ', t2.first_name) "ФИО", sum_orders_discount "Сумма всех заказов"
 FROM orders_sum t1
-LEFT JOIN employee_fio t2 USING(employee_id)
-GROUP BY t2.fio;
+LEFT JOIN employees t2 USING(employee_id)
+ORDER BY t1.sum_orders_discount DESC;
 
 -- 3.5. Показать перечень товаров от самых продаваемых до самых непродаваемых (в штуках).
 -- Вывести наименование продукта и количество проданных штук.
