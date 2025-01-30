@@ -7,15 +7,9 @@ FROM orders;
 -- 3.2. Посчитать сумму денег по всем заказам за все время (учитывая скидки).
 -- Смотри таблицу order_details. Вывод: id заказа, итоговый чек (сумма стоимостей всех  продуктов со скидкой)
 
-WITH order_with_absolut AS (
-	SELECT order_id,
-		CAST(SUM(unit_price * quantity) AS numeric(10,	2)) AS sum_orders,
-		SUM(unit_price * quantity * discount) AS abs_discount
-	FROM order_details
-	GROUP BY order_id
-)
-SELECT order_id "id заказа", CAST(SUM(sum_orders - abs_discount) AS numeric(10, 2)) "итоговый чек"
-FROM order_with_absolut
+SELECT order_id AS "id заказа",
+    CAST(SUM((unit_price * quantity) * (1 - discount)) AS numeric(10, 2)) AS "итоговый чек"
+FROM order_details
 GROUP BY order_id
 ORDER BY order_id;
 
