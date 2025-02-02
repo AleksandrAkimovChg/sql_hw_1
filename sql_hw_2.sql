@@ -30,9 +30,10 @@ WITH orders_sum AS (
 	JOIN order_details USING(order_id)
     GROUP BY employee_id
 )
+
 SELECT concat(t2.last_name, ' ', t2.first_name) "ФИО", sum_orders_discount "Сумма всех заказов"
 FROM orders_sum t1
-LEFT JOIN employees t2 USING(employee_id)
+    LEFT JOIN employees t2 t2.mployee_id = t1.mployee_id
 ORDER BY t1.sum_orders_discount DESC;
 
 -- 3.5. Показать перечень товаров от самых продаваемых до самых непродаваемых (в штуках).
@@ -45,5 +46,5 @@ WITH orders_products AS (
 )
 SELECT t2.product_name "Наименование продукта", quantity_prod "Продано (шт)"
 FROM orders_products t1
-LEFT JOIN products t2 USING(product_id)
+    JOIN products t2 t1.product_id = t2.product_id
 ORDER BY quantity_prod DESC;
