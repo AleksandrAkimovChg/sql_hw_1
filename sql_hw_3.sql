@@ -7,7 +7,6 @@ do $$
 		product varchar;
 		table_name varchar;
 	begin
-		<<create_table>>
 		for result_row in (select distinct product_type, is_company from bid) loop
 			product := result_row.product_type;
 			if result_row.is_company = false then
@@ -26,7 +25,7 @@ do $$
 				client_name, amount from bid
 				where is_company = $1 and product_type = $2'
 				using result_row.is_company, product;
-		end loop create_table;
+		end loop;
 	end;
 $$
 
@@ -53,12 +52,7 @@ $$
 
 
 -- task 03
-do $$
-	begin
-		create or replace view manager_bid as (
-			select *
-			from bid
-			where is_company = true
-		);
-	end;
-$$
+create or replace view manager_bid as (
+    select *
+	from bid
+	where is_company = true);
