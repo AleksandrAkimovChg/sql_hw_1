@@ -27,7 +27,7 @@ do $$
 				using result_row.is_company, product;
 		end loop;
 	end;
-$$
+$$;
 
 -- task 02
 do $$
@@ -48,7 +48,7 @@ do $$
 		raise notice 'Общая сумма начисленных процентов в таблице credit_percent = %',
 			(select sum(amount) from credit_percent);
 	end;
-$$
+$$;
 
 
 -- task 03

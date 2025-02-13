@@ -33,13 +33,13 @@ grant select on table party_guest_name to guard;
 -- --Teona miss_teona_99@yahoo.com
 
 set role manager;
+set role postgres;
+GRANT USAGE ON SEQUENCE party_guest_id_seq TO manager; --иначе была ошибка по доступу к секвенсу
+set role manager;
 insert into party_guest (name, email) values
 	('Charles', 'charles_ny@yahoo.com'),
 	('Charles', 'mix_tape_charles@google.com'),
 	('Teona', 'miss_teona_99@yahoo.com');
-
-set role postgres;
-GRANT USAGE ON SEQUENCE party_guest_id_seq TO manager; --иначе была ошибка
 
 -- 6. Переключиться на роль guard и посмотреть имена.
 -- Проверить, что guard не имеет доступа к таблице party_guest.
@@ -95,7 +95,8 @@ as $$
 		if is_table_exist then
 			select count(email) > 0
 			from black_list
-			where email like || quote_literal(_email) into is_guest;
+			where email like || quote_literal(_email)
+			into is_guest;
 			if is_guest then
 				return false;
 			else
@@ -116,28 +117,20 @@ select register_to_party('Petr', 'korol_party@yandex.ru');
 -- 11. На вечеринку пришли гости с
 -- email - mix_tape_charles@google.com, miss_teona_99@yahoo.com.
 -- Поменять статус у них на "пришел"
-set role manager;
-select current_user;
-select * from party_guest;
+
 set role postgres;
 
 update party_guest
 set is_come = true
 where email like 'mix_tape_charles@google.com';
 
-select * from party_guest;
-
 update party_guest
 set is_come = true
 where email like 'miss_teona_99@yahoo.com';
 
-select * from party_guest;
-
 -- 12. Запустить процедуру party_end.
 
 call party_end();
-
-select * from black_list;
 
 -- Комментарий:
 -- Для получения информации, есть ли такая таблица в схеме,
