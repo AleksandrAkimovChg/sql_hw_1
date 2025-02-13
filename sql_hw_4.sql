@@ -95,7 +95,7 @@ as $$
 		if is_table_exist then
 			select count(email) > 0
 			from black_list
-			where email like || quote_literal(_email)
+			where email like quote_literal(_email)
 			into is_guest;
 			if is_guest then
 				return false;
