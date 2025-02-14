@@ -111,14 +111,12 @@ as $$
 $$;
 
 -- 10. Зарегистрировать Petr, korol_party@yandex.ru на вечеринку с помощью функции.
-set role manager;
+
 select register_to_party('Petr', 'korol_party@yandex.ru');
 
 -- 11. На вечеринку пришли гости с
 -- email - mix_tape_charles@google.com, miss_teona_99@yahoo.com.
 -- Поменять статус у них на "пришел"
-
-set role postgres;
 
 update party_guest
 set is_come = true
