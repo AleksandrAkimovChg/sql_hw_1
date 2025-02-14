@@ -45,7 +45,7 @@ insert into party_guest (name, email) values
 -- Проверить, что guard не имеет доступа к таблице party_guest.
 set role guard;
 select * from party_guest_name;
-select * from party_guest;
+--select * from party_guest;
 
 -- 7. Перейти в роль postgres
 
@@ -87,28 +87,19 @@ returns boolean
 language plpgsql
 as $$
 	declare
-		is_table_exist boolean;
-		is_guest boolean;
-		sql_query varchar := 'insert into party_guest (name, email) values ($1, $2)';
+		black_list_table_exists boolean := (select to_regclass('public.black_list') is not null);
 	begin
-		select to_regclass('public.black_list') is not null into is_table_exist;
-		if is_table_exist then
-			select count(email) > 0
-			from black_list
-			where email like quote_literal(_email)
-			into is_guest;
-			if is_guest then
-				return false;
-			else
-				execute sql_query using _name, _email;
-				return true;
-			end if;
-		else
-			execute sql_query using _name, _email;
-			return true;
+		insert into party_guest (name, email) values (_name, _email);
+		if black_list_table_exists then
+		    if exists (select 1 from black_list where lower(email) = lower(_email)) then
+		        rollback;
+		        return false;
+		    end if;
 		end if;
+		return true;
 	end;
 $$;
+
 
 -- 10. Зарегистрировать Petr, korol_party@yandex.ru на вечеринку с помощью функции.
 
@@ -120,11 +111,11 @@ select register_to_party('Petr', 'korol_party@yandex.ru');
 
 update party_guest
 set is_come = true
-where email like 'mix_tape_charles@google.com';
+where lower(email) = lower('mix_tape_charles@google.com');
 
 update party_guest
 set is_come = true
-where email like 'miss_teona_99@yahoo.com';
+where lower(email) = lower('miss_teona_99@yahoo.com');
 
 -- 12. Запустить процедуру party_end.
 
